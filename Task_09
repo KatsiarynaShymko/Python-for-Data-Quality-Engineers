@@ -1,0 +1,231 @@
+import xml.etree.ElementTree as ET
+import Task08
+import csv
+from collections import Counter
+import Task04
+import os
+import re
+import json
+import datetime
+from datetime import datetime, date
+import Task07
+
+if os.path.exists("news.txt"):
+    os.remove("news.txt")
+
+#News code
+class News:
+    def __init__(self, new, place, datetime):
+        self.new = new
+        self.place = place
+        self.datetime = datetime
+    def print_news(self):
+        formatted_date = self.datetime.strftime("%m/%d/%Y")
+        formatted_time = self.datetime.strftime("%H.%M")
+        content = f"""News -------------------------
+{self.new}
+{self.place}, {formatted_date} {formatted_time}
+------------------------------\n\n"""
+        with open("news.txt", "a") as file:
+            file.write(content)
+
+#Advertise code
+class PrivateAdd:
+    def __init__(self, advr, expdate):
+        self.advr = advr
+        self.expdate = expdate
+    def print_adv(self):
+        current_day = date.today()
+        remaining_days = (self.expdate - current_day).days
+        expiration_date_upd = self.expdate.strftime("%d/%m/%Y")
+        cont2 = f"""Private Ad ------------------
+{self.advr}
+Actual until: {expiration_date_upd}, {remaining_days} days left
+------------------------------\n\n"""
+        with open("news.txt", "a") as file:
+            file.write(cont2)
+
+#Joking code
+class Joke:
+    def __init__(self, txt):
+        self.txt = txt
+    def print_joke(self):
+        cont3 = f"""Joke of the day ------------
+{self.txt}
+------------------------------\n\n"""
+        with open("news.txt", "a") as file:
+            file.write(cont3)
+
+#Brealing news (Task06)
+class Breaking_news:
+    def __init__(self, file_path):
+        self.file_path = file_path
+    def print_breaknews(self):
+        with open(f"{self.file_path}", "r", encoding="utf-8") as file:
+            content = file.read()
+            content = Task04.update_text(content)
+            cont4 = f"""Breaking news ------------
+{content}\n------------------------------\n\n"""
+            with open("news.txt", "a") as file:
+                file.write(cont4)
+
+#Task08
+class JsonInput:
+    def __init__(self, filepath):
+        self.filepath = filepath
+
+    def News_Json(self):
+        with open(f"{self.filepath}", "r") as file:
+            data = json.load(file)
+
+        if isinstance(data, list):
+            for item in data:
+                self.process_item(item)
+        else:
+            self.process_item(data)
+
+    def process_item(self, item):
+            class_type = item.get("Type")
+            if class_type == "PrivateAdd":
+                advr = item.get("advr")
+                expdate_str = item.get("expdate")
+                expdate = datetime.strptime(expdate_str, "%Y-%m-%d").date()
+                cont8 = Task07.PrivateAdd(advr, expdate)
+                cont8.print_adv()
+            elif class_type == "News":
+                new = item.get("new")
+                place = item.get("place")
+                current_datetime = datetime.now()
+                cont9 = Task07.News(new, place, current_datetime)
+                cont9.print_news()
+            elif class_type == "Joke":
+                txt = item.get("txt")
+                cont10 = Task07.Joke(txt)
+                cont10.print_joke()
+            elif class_type == "Breaking_news":
+                file_path = item.get("file_path")
+                cont11 = Task07.Breaking_news(file_path)
+                cont11.print_breaknews()
+            else:
+                raise ValueError("Invalid class type in JSON")
+
+#Task09
+class XMLinput:
+    def __init__(self, filepath):
+        self.filepath = filepath
+
+    def parse_xml(self):
+        tree = ET.parse(self.filepath)
+        root = tree.getroot()
+
+        if root.tag == "root":
+            items = root.find("items")
+            for item in items.findall("item"):
+                self.process_item(item)
+        else:
+            self.process_item(root)
+
+    def process_item(self, item):
+        class_type = item.get("Type")
+        if class_type == "PrivateAdd":
+            advr = item.find("advr").text
+            expdate_str = item.find("expdate").text
+            expdate = datetime.strptime(expdate_str, "%Y-%m-%d").date()
+            cont12 = Task08.PrivateAdd(advr, expdate)
+            cont12.print_adv()
+        elif class_type == "News":
+            new = item.find("new").text
+            place = item.find("place").text
+            current_datetime = datetime.now()
+            cont13 = Task08.News(new, place, current_datetime)
+            cont13.print_news()
+        elif class_type == "Joke":
+            txt = item.find("txt").text
+            cont14 = Task08.Joke(txt)
+            cont14.print_joke()
+        elif class_type == "Breaking_news":
+            file_path = item.find("file_path").text
+            cont15 = Task08.Breaking_news(file_path)
+            cont15.print_breaknews()
+        else:
+            raise ValueError("Invalid class type in XML")
+
+
+
+#Task07
+class CsvCollecterCount:
+    def __init__(self, filepath):
+        self.filepath = filepath
+
+    def count_words(self):
+        with open(f"{self.filepath}", "r") as file:
+            content = file.read()
+            case_lower = content.lower()
+            words = re.findall(r'\b\w+\b', case_lower)
+            word_counts = {}
+
+            for word in words:
+                if word in word_counts:
+                    word_counts[word] += 1
+                else:
+                    word_counts[word] = 1
+
+        if os.path.exists("word_counts.csv"):
+            os.remove("word_counts.csv")
+
+        with open("word_counts.csv", "w") as csvfile:
+            writer = csv.writer(csvfile)
+            for word, count in word_counts.items():
+                writer.writerow([word, count])
+
+
+class CsvLetter:
+    def __init__(self, filepath):
+        self.filepath = filepath
+
+    def letter_info(self):
+        with open(f"{self.filepath}", "r") as file:
+            content = file.read()
+            letters = []
+            for char in content:
+                if char.strip():
+                    letters.append(char)
+        letter_counts = Counter(letters)
+        total_letters = sum(letter_counts.values())
+        letter_percentages = {
+            letter: count / total_letters * 100 for letter, count in letter_counts.items()
+        }
+
+        if os.path.exists("letter_count.csv"):
+            os.remove("letter_count.csv")
+
+        with open("letter_count.csv", "w") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["Letter", "Count_All", "Count_Uppercase", "Percentage"])
+            for letter in sorted(letter_counts.keys()):
+                count_all = letter_counts[letter]
+                count_uppercase = letter_counts[letter.upper()]
+                percentage = "{:.2f}".format(letter_percentages[letter])
+                writer.writerow([letter, count_all, count_uppercase, percentage])
+
+x = News("Smth happend disaster", "Tbilisi", datetime.now())
+a = PrivateAdd("Advertise", date(2023, 7, 24))
+b = Joke("How does the ocean say hi? It waves!@@")
+d = Joke("Haha")
+e = PrivateAdd("KupiPlease", date(2024, 1, 1))
+c = Breaking_news("output.txt")
+i = JsonInput("SportNote.json")
+w = XMLinput("sample.xml")
+f = CsvCollecterCount("news.txt")
+g = CsvLetter("news.txt")
+
+x.print_news()
+a.print_adv()
+b.print_joke()
+d.print_joke()
+e.print_adv()
+c.print_breaknews()
+i.News_Json()
+w.parse_xml()
+f.count_words()
+g.letter_info()
