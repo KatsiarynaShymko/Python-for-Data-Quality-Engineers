@@ -1,0 +1,44 @@
+hw = '''homEwork:
+
+  tHis iz your homeWork, copy these Text to variable.
+
+ 
+
+  You NEED TO normalize it fROM letter CASEs point oF View. also, create one MORE senTENCE witH LAST WoRDS of each existING SENtence and add it to the END OF this Paragraph.
+
+ 
+
+  it iZ misspeLLing here. fix“iZ” with correct “is”, but ONLY when it Iz a mistAKE.
+
+ 
+
+  last iz TO calculate nuMber OF Whitespace characteRS in this Tex. caREFULL, not only Spaces, but ALL whitespaces. I got 87.'''
+
+hw1 = hw.lower()
+hw2 = hw1.replace(' iz ', ' is ')
+hw3 = hw2.replace('\n\n', '')
+hw4 = hw3.split('.')
+
+last_words = []
+
+for s in hw4:
+    words = s.strip().split()
+    if words:
+        last_word = words[-1]
+        if last_word[-1] == '.':
+            last_word = last_word[:-1]
+        last_words.append(last_word)
+
+b = " ".join(last_words)
+hw5 = hw4 + [b]
+
+cap_sen = []
+for sentence in hw5:
+    capitalized_sentence = sentence.strip().capitalize()
+    cap_sen.append(capitalized_sentence)
+
+hw6 = '. '.join(cap_sen).replace(' .', '.').rstrip()
+whitespace_count = sum(1 for char in hw6 if char.isspace())
+
+print(hw6)
+print("We have following number of whitespaces:", whitespace_count)
