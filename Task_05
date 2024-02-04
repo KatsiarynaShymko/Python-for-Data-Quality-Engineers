@@ -1,0 +1,64 @@
+import datetime
+from datetime import date
+
+#News code
+class News:
+    def __init__(self, new, place, datetime):
+        self.new = new
+        self.place = place
+        self.datetime = datetime
+    def print_news(self):
+        formatted_date = self.datetime.strftime("%m/%d/%Y")
+        formatted_time = self.datetime.strftime("%H.%M")
+        content = f"""News -------------------------
+{self.new}
+{self.place}, {formatted_date} {formatted_time}
+------------------------------\n\n"""
+        print(content)
+        with open("news.txt", "w") as file:
+            file.write(content)
+
+#Advertise code
+class PrivateAdd:
+    def __init__(self, advr, expdate):
+        self.advr = advr
+        self.expdate = expdate
+    def print_adv(self):
+        current_day = date.today()
+        remaining_days = (self.expdate - current_day).days
+        expiration_date_upd = self.expdate.strftime("%d/%m/%Y")
+        cont2 = f"""Private Ad ------------------
+{self.advr}
+Actual until: {expiration_date_upd}, {remaining_days} days left
+------------------------------\n\n"""
+        print(cont2)
+        with open("news.txt", "a") as file:
+            file.write(cont2)
+
+#Joking code
+class Joke:
+    def __init__(self, txt):
+        self.txt = txt
+    def print_joke(self):
+        cont3 = f"""Joke of the day ------------
+{self.txt}
+------------------------------\n\n"""
+        print(cont3)
+        with open("news.txt", "a") as file:
+            file.write(cont3)
+
+
+x = News("Smth happend disaster", "Tbilisi", datetime.datetime.now())
+x.print_news()
+
+a = PrivateAdd("Advertise", date(2023, 7, 24))
+a.print_adv()
+
+b = Joke("How does the ocean say hi? It waves!")
+b.print_joke()
+
+d = Joke("Haha")
+d.print_joke()
+
+e = PrivateAdd("KupiPlease", date(2024, 1, 1))
+e.print_adv()
