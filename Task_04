@@ -1,0 +1,77 @@
+#Task02
+import random
+def lists_task(a,b):
+    if a == 2 and b == 10:
+        num_dicts = random.randint(a, b)
+        list_of_dicts = []
+
+        for m in range(num_dicts):
+            num_keys = random.randint(1, 5)  # Generate a random number of keys between 1 and 5
+            dictionary = {}
+
+            for i in range(num_keys):
+                key = chr(random.randint(97, 122))  # Generate a random lowercase letter
+                value = random.randint(0, 100)  # Generate a random number between 0 and 100
+                dictionary[key] = value
+
+            list_of_dicts.append(dictionary)
+
+        print("Step 1: List of dicts")
+        print(list_of_dicts)
+
+        # Step 2: Create a common dict with max values for each key
+        common_dict = {}
+
+        for i, dictionary in enumerate(list_of_dicts):
+            for key, value in dictionary.items():
+                if key in common_dict:
+                    if value > common_dict[key]:
+                        # If the current value is greater, update the common dict with the new value
+                        common_dict[key] = value
+                        common_dict[key + "_" + str(i + 1)] = common_dict.pop(key)
+                    else:
+                        # If the current value is smaller, update the key name to include the dict number with max value
+                        common_dict[key + "_" + str(i + 1)] = value
+                else:
+                    # If the key is not already in the common dict, add it as is
+                    common_dict[key] = value
+
+        print("Step 2: Common dict")
+        return common_dict
+    else:
+        print("a should be equal 2 and b should be equal 10")
+
+
+print(lists_task(2,10))
+
+
+#Task03
+def update_text(hw):
+    hw1 = hw.lower()
+    hw2 = hw1.replace(' iz ', ' is ')
+    hw3 = hw2.replace('\n\n', '')
+    hw4 = hw3.split('.')
+
+    cap_sen = []
+    for sentence in hw4:
+        capitalized_sentence = sentence.strip().capitalize()
+        cap_sen.append(capitalized_sentence)
+
+    hw5 = '. '.join(cap_sen).replace(' .', '.').rstrip()
+    return hw5
+
+print(update_text('''homEwork:
+
+  tHis iz your homeWork, copy these Text to variable.
+
+ 
+
+  You NEED TO normalize it fROM letter CASEs point oF View. also, create one MORE senTENCE witH LAST WoRDS of each existING SENtence and add it to the END OF this Paragraph.
+
+ 
+
+  it iZ misspeLLing here. fix“iZ” with correct “is”, but ONLY when it Iz a mistAKE.
+
+ 
+
+  last iz TO calculate nuMber OF Whitespace characteRS in this Tex. caREFULL, not only Spaces, but ALL whitespaces. I got 87.'''))
